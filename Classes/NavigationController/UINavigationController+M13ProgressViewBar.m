@@ -224,7 +224,8 @@ static char backgroundViewKey;
     if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
         //Use the maximum value
         width = MAX(screenSize.width, screenSize.height);
-        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+      
+        if (self.view.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
             height = 32.0; //Hate hardcoding values, but autolayout doesn't work, and cant retreive the new height until after the animation completes.
         } else {
             height = 44.0; //Hate hardcoding values, but autolayout doesn't work, and cant retreive the new height until after the animation completes.
@@ -254,10 +255,13 @@ static char backgroundViewKey;
     backgroundView.frame = CGRectMake(0, height - 2.5, width, 2.5);
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    [self updateProgressWithInterfaceOrientation:toInterfaceOrientation];
-    [self drawIndeterminateWithInterfaceOrientation:toInterfaceOrientation];
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize: size withTransitionCoordinator: coordinator];
+  [coordinator animateAlongsideTransition: nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+    [self updateProgressWithInterfaceOrientation:[self currentDeviceOrientation]];
+    [self drawIndeterminateWithInterfaceOrientation:[self currentDeviceOrientation]];
+  }];
+  
 }
 
 - (void)drawIndeterminate
